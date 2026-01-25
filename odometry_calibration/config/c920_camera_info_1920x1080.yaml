@@ -1,0 +1,26 @@
+image_width: 1920
+image_height: 1080
+camera_name: c920_camera
+camera_matrix:
+  rows: 3
+  cols: 3
+  data: [1381.52355,    0.     ,  924.77062,
+            0.     , 1383.82797,  561.92925,
+            0.     ,    0.     ,    1.     ]
+distortion_model: plumb_bob
+distortion_coefficients:
+  rows: 1
+  cols: 5
+  data: [0.086890, -0.119429, -0.000818, -0.006057, 0.000000]
+rectification_matrix:
+  rows: 3
+  cols: 3
+  data: [1., 0., 0.,
+         0., 1., 0.,
+         0., 0., 1.]
+projection_matrix:
+  rows: 3
+  cols: 4
+  data: [1398.59338,    0.     ,  911.31687,    0.     ,
+            0.     , 1412.52197,  560.67535,    0.     ,
+            0.     ,    0.     ,    1.     ,    0.     ]

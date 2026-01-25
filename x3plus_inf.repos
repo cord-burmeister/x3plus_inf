@@ -1,0 +1,6 @@
+repositories:
+  x3plus_inf:
+    type: git
+    url: https://github.com/cord-burmeister/x3plus_inf.git
+    version: main
+

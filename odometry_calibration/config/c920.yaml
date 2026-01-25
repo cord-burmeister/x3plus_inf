@@ -1,0 +1,34 @@
+usb_cam:
+  ros__parameters:
+    video_device: "/dev/video0"
+    # Values for 1280x720 @ 10 fps
+    # image_width: 1280
+    # image_height: 720
+    # framerate: 10.0
+    # Values for 1920x1080 @ 5 fps
+    image_width: 1920
+    image_height: 1080
+    framerate: 5.0
+    # Values for 2304x1536 @ 2 fps
+    # image_width: 2304
+    # image_height: 1536
+    # framerate: 2.0
+    pixel_format: "yuyv"
+    io_method: "mmap"
+
+    ## camera_frame_id: "c920_camera"
+    
+    # brightness: -1 # 0-255, -1 "leave alone"
+    # contrast: -1 # 0-255, -1 "leave alone"
+    # saturation: -1 # 0-255, -1 "leave alone"
+    # sharpness: -1 # 0-255, -1 "leave alone"
+    # gain: -1 # 0-255, -1 "leave alone"
+    # auto_white_balance: true
+    # autoexposure: true
+    # autofocus: true
+
+    # Topic names 
+    image_topic: "/c920_camera/image_raw" 
+    camera_info_topic: "/c920_camera/camera_info" 
+    camera_name: "c920_camera" 
+    frame_id: "c920_camera_link_optical"

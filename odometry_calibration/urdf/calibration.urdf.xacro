@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="odometry_calibration" xmlns:xacro="http://wiki.ros.org/xacro"
+    xmlns:gz="http://gazebosim.org/schema">
+
+    <!-- define the list of relevant args -->
+    <xacro:arg name="cameraHeight" default="1.544" />
+    <xacro:arg name="cameraAngle" default="0.43" /> <!-- 28 degree-->
+    <xacro:arg name="worldTagOffset" default="0.30" />
+
+    <!-- set the internal properties based on the arguments -->
+    <xacro:property name="cameraHeight" value="$(arg cameraHeight)" />
+    <xacro:property name="cameraAngle" value="$(arg cameraAngle)" />
+    <xacro:property name="worldTagOffset" value="$(arg worldTagOffset)" />
+
+    <material name="Green">
+        <color rgba="0 0.7 0 1" />
+    </material>
+    <material name="White">
+        <color rgba="0.7 0.7 0.7 1" />
+    </material>
+    <material name="Grey">
+        <color rgba="0.5 0.5 0.5 1.0" />
+    </material>
+
+    <xacro:property name="tag_size" value="0.1" />
+    <xacro:property name="tripod_height" value="1.0" />
+    <xacro:property name="cylinder_height" value="${cameraHeight - tripod_height}" />
+    <xacro:property name="cylinder_radius" value="0.02" />
+
+    <link name="world"></link>
+
+   
+
+    <xacro:include filename="$(find odometry_calibration)/urdf/calibration/apriltag_marker.xacro" />
+
+    <xacro:apriltag_marker namespace="" name="world_tag" parent="world" family="36_11" ID="0" size="0.1"> 
+                <origin xyz="0 0 0" rpy=" 0 0 0" />
+    </xacro:apriltag_marker>
+
+    <link name="tripod_base_link">
+        <inertial>
+            <origin xyz="-0.0304416859098744 4.23384368655101E-05 0.0448234503408059" rpy="0 0 0" />
+            <mass value="1.0754239466482" />
+            <inertia
+                ixx="0.0208831789264125"
+                ixy="2.4618093127858E-06"
+                ixz="0.00616019290028669"
+                iyy="0.0265621377486244"
+                iyz="-1.10079499865282E-06"
+                izz="0.0129535610833954" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 ${pi / 6 * 1}" />
+            <geometry>
+                <mesh
+                    filename="package://odometry_calibration/meshes/tripod.dae"  scale="2.23 2.23 2.23"/>
+            </geometry>
+            <material name="">
+                <color rgba="0 0.7 0 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 ${pi / 6 * 1}" />
+            <geometry>
+                <mesh
+                    filename="package://odometry_calibration/meshes/tripod.dae" scale="2.23 2.23 2.23"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="tripod_base_joint" type="fixed">
+        <parent link="world" />
+        <child link="tripod_base_link" />
+        <origin xyz="${-worldTagOffset} 0.0 0.0" rpy="0 0 0" />
+    </joint>
+
+     <link name="tripod_slider_link">
+        <visual>
+            <geometry>
+                <cylinder length="${cylinder_height}" radius="${cylinder_radius}"/>
+            </geometry>
+            <material name="Grey">
+                <color rgba="0 1 0 1"/>
+            </material>
+        </visual>
+        <inertial>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <mass value="0.05"/>
+            <inertia ixx="0.001"  ixy="0"  ixz="0" iyy="0.001" iyz="0" izz="0.001" />
+        </inertial>
+        <collision>
+            <geometry>
+                <cylinder length="${cylinder_height}" radius="${cylinder_radius}"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="linear_actuator_joint" type="fixed">
+        <parent link="tripod_base_link" />
+        <child link="tripod_slider_link" />
+        <origin xyz="0.0 0.0 ${tripod_height + cylinder_height/2}" rpy="0 0 0" />
+    </joint>
+
+<!-- 
+    <joint name="linear_actuator_joint" type="prismatic">
+        <parent link="tripod_base_link"/>
+        <child link="tripod_slider_link"/>
+        <origin xyz="0 0 ${tripod_height}" rpy="0 0 0"/>
+        <axis xyz="0 0 1"/>
+        <limit lower="-0.5" upper="2.0" velocity="1.0" effort="1000"/>
+    </joint>
+ -->
+    
+
+    <link name="c920_camera_link">
+          <inertial>
+            <origin xyz="-0.0304416859098744 4.23384368655101E-05 0.0448234503408059" rpy="0 0 0" />
+            <mass value="1.0754239466482" />
+            <inertia
+                ixx="0.0208831789264125"
+                ixy="2.4618093127858E-06"
+                ixz="0.00616019290028669"
+                iyy="0.0265621377486244"
+                iyz="-1.10079499865282E-06"
+                izz="0.0129535610833954" />
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 ${pi / 2}" />
+            <geometry>
+                <mesh
+                    filename="package://odometry_calibration/meshes/camera.dae"  scale="0.2 0.2 0.2" />
+            </geometry>
+            <material name="">
+                <color rgba="0 0.7 0 1" />
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 ${pi / 2}" />
+            <geometry>
+                <mesh
+                    filename="package://odometry_calibration/meshes/camera.dae"  scale="0.2 0.2 0.2" />
+            </geometry>
+        </collision>
+    </link>
+
+    
+
+    <joint name="c920_camera_joint" type="fixed">
+        <parent link="tripod_slider_link" />
+        <child link="c920_camera_link" />
+        <origin xyz="0.0 0.0 ${cylinder_height / 2}" rpy="0 ${pi / 2 - cameraAngle} 0" />
+        <!-- <origin xyz="0.0 0.0 ${cylinder_height / 2}" rpy="${pi + cameraAngle} 0 0" /> -->
+    </joint>
+
+    <link name="c920_camera_link_optical"></link>
+
+   <joint name="c920_camera_optical_joint" type="fixed">
+            <origin xyz="0 0 0" rpy="${-pi/2} 0 ${-pi/2}" />
+            <parent link="c920_camera_link" />
+            <child link="c920_camera_link_optical" />
+        </joint>
+        
+
+
+    <!-- https://github.com/orbbec/OrbbecSDK_ROS2#all-available-topics -->
+    <gazebo reference="camera_link">
+        <sensor type="camera" name="camera_calibration_color">
+            <always_on>true</always_on>
+            <update_rate>10.0</update_rate>
+
+            <topic>/c920_camera/image_raw</topic>
+            <visualize>true</visualize>
+
+            <!-- <frame_id >camera_link</frame_id > -->
+            <gz_frame_id>camera_link</gz_frame_id >
+            <horizontal_fov>${60.0/180.0*pi}</horizontal_fov>
+            <image>
+                <width>640</width>
+                <height>480</height>
+            </image>
+
+            <clip>
+                <near>0.6</near>
+                <far>8.0</far>
+            </clip>
+        </sensor>
+    </gazebo>
+
+</robot>
