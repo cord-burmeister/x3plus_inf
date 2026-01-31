@@ -49,11 +49,11 @@ void calculatePolygons()
     double grh0 = (camera_height_ - robot_height_) * tan((camera_angle_ - fovv_ / 2.0) * M_PI / 180.0);
     double grh1 = (camera_height_ - robot_height_) * tan((camera_angle_ + fovv_ / 2.0) * M_PI / 180.0);
  
-    double wgh0 = dgh0 * tan(fovh_ / 2.0 * M_PI / 180.0);
-    double wgh1 = dgh1 * tan(fovh_ / 2.0 * M_PI / 180.0);
-    double wrh0 = drh0 * tan(fovh_ / 2.0 * M_PI / 180.0);
-    double wrh1 = drh1 * tan(fovh_ / 2.0 * M_PI / 180.0);
-
+    double wgh0 = dgh0 * tan(fovh_ * M_PI / 180.0) / 2.0;
+    double wgh1 = dgh1 * tan(fovh_ * M_PI / 180.0) / 2.0;
+    double wrh0 = drh0 * tan(fovh_ * M_PI / 180.0) / 2.0;
+    double wrh1 = drh1 * tan(fovh_ * M_PI / 180.0)  / 2.0;
+    
     groundPolygon_.clear();
     groundPolygon_.emplace_back(ggh0 - world_offset_, -wgh1);
     groundPolygon_.emplace_back(ggh0 - world_offset_, wgh1);

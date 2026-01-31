@@ -28,12 +28,19 @@ from launch.actions import OpaqueFunction
 # evaluates LaunchConfigurations in context for use with xacro.process_file(). Returns a list of launch actions to be included in launch description
 def evaluate_xacro(context, *args, **kwargs):
 
+    world_offset = LaunchConfiguration('world_offset').perform(context)
+    camera_height = LaunchConfiguration('camera_height').perform(context)
+    camera_angle = LaunchConfiguration('camera_angle').perform(context)
+
     # Use xacro to process the file
     xacro_file = os.path.join(get_package_share_directory('odometry_calibration'), 'urdf', 'calibration.urdf.xacro')
 
     #robot_description_config = xacro.process_file(xacro_file)
     robot_description_config = xacro.process_file(xacro_file, 
             mappings={  
+                "worldTagOffset": world_offset,
+                "cameraHeight": camera_height,
+                "cameraAngle": camera_angle
                 }).toxml()
 
     robot_state_publisher_node = Node(
@@ -60,6 +67,34 @@ def generate_launch_description():
 
     rviz_arg = DeclareLaunchArgument(name='rvizconfig', default_value=str(default_rviz_config_path),
                                      description='Absolute path to rviz config file')
+
+
+    world_offset = LaunchConfiguration("world_offset")
+    world_offset_arg = DeclareLaunchArgument(
+        "world_offset",
+        default_value="0.55",
+        description=(
+            "Offset of the world frame in meters to the camera frame along the x axis",
+        ),
+    )
+
+    camera_height = LaunchConfiguration("camera_height")
+    camera_height_arg = DeclareLaunchArgument(
+        "camera_height",
+        default_value="2.18",
+        description=(
+            "Height of the camera frame in meters above the ground",
+        ),
+    )
+
+    camera_angle = LaunchConfiguration("camera_angle")
+    camera_angle_arg = DeclareLaunchArgument(
+        "camera_angle",
+        default_value="24.8",
+        description=(
+            "Angle of the camera frame in radians relative to the world frame",
+        ),
+    )
 
 
     # Depending on gui parameter, either launch joint_state_publisher or joint_state_publisher_gui
@@ -89,12 +124,20 @@ def generate_launch_description():
         package='odometry_calibration',
         executable='polygon_publisher',
         name='polygon_publisher',
+        arguments=[
+            '--world_offset', world_offset,
+            '--camera_height', camera_height,
+            '--camera_angle', camera_angle
+        ],
         output='screen'
     )
 
     return LaunchDescription([
         gui_arg,
         rviz_arg,
+        world_offset_arg,
+        camera_height_arg,
+        camera_angle_arg,
         joint_state_publisher_node,
         joint_state_publisher_gui_node,
         #robot_state_publisher_node,

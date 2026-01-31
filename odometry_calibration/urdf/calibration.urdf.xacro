@@ -4,14 +4,15 @@
 
     <!-- define the list of relevant args -->
     <xacro:arg name="cameraHeight" default="1.544" />
-    <xacro:arg name="cameraAngle" default="0.43" /> <!-- 28 degree-->
-    <xacro:arg name="worldTagOffset" default="0.30" />
+    <xacro:arg name="cameraAngle" default="28" /> <!-- 28 degree-->
+    <xacro:arg name="worldTagOffset" default="0.45" />
 
     <!-- set the internal properties based on the arguments -->
     <xacro:property name="cameraHeight" value="$(arg cameraHeight)" />
-    <xacro:property name="cameraAngle" value="$(arg cameraAngle)" />
+    <xacro:property name="cameraAngleDregree" value="$(arg cameraAngle)" />
     <xacro:property name="worldTagOffset" value="$(arg worldTagOffset)" />
-
+    <xacro:property name="cameraAngle" value="${cameraAngleDregree *pi/180.0}" />
+    
     <material name="Green">
         <color rgba="0 0.7 0 1" />
     </material>

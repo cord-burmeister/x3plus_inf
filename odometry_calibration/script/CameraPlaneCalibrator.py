@@ -109,9 +109,10 @@ class CameraPlaneCalibrator(Node):
         pitch_deg = np.degrees(pitch)
 
         pitch_rad = np.pi/2 - pitch
+        pitch_deg = np.degrees(pitch_rad)
 
         self.get_logger().info(
-            f"Height: {height:.3f} m | Pitch: {pitch_rad:.2f} rad | Normal: {plane_normal}"
+            f"Height: {height:.3f} m | Pitch: {pitch_deg:.2f} deg | Normal: {plane_normal}"
         )
 
 
