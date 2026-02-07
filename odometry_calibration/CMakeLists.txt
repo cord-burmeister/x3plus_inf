@@ -29,9 +29,13 @@ ament_target_dependencies(ground_truth_node rclcpp sensor_msgs nav_msgs apriltag
 add_executable(polygon_publisher src/polygon_publisher.cpp) 
 ament_target_dependencies(polygon_publisher rclcpp visualization_msgs geometry_msgs )
 
+add_executable(odom_to_world_pose_node src/odom_to_world_pose_node.cpp)
+ament_target_dependencies(odom_to_world_pose_node rclcpp sensor_msgs nav_msgs)
+
+
 # Install targets
 install(TARGETS
-  odometry_calibration_node ground_truth_node polygon_publisher
+  odometry_calibration_node ground_truth_node polygon_publisher odom_to_world_pose_node
   DESTINATION lib/${PROJECT_NAME}
 )
 
