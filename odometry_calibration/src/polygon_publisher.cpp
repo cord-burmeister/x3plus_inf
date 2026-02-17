@@ -19,7 +19,7 @@ public:
     world_offset_ = this->declare_parameter<double>("world_offset", 0.3);
     camera_height_ = this->declare_parameter<double>("camera_height", 1.500);
     camera_angle_ = this->declare_parameter<double>("camera_angle", 30);
-    robot_height_ = this->declare_parameter<double>("robot_height", 0.4);
+    robot_height_ = this->declare_parameter<double>("robot_height", 0.27);
     tag_size_ = this->declare_parameter<double>("tag_size", 0.1);
     fovh_ = this->declare_parameter<double>("fovh", 70.1);  // 70.1 degrees
     fovv_ = this->declare_parameter<double>("fovv", 43.3);  // 43.3 degrees

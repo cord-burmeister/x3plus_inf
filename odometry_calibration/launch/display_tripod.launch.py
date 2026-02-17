@@ -81,7 +81,7 @@ def generate_launch_description():
     camera_height = LaunchConfiguration("camera_height")
     camera_height_arg = DeclareLaunchArgument(
         "camera_height",
-        default_value="2.18",
+        default_value="2.15",
         description=(
             "Height of the camera frame in meters above the ground",
         ),
@@ -90,7 +90,7 @@ def generate_launch_description():
     camera_angle = LaunchConfiguration("camera_angle")
     camera_angle_arg = DeclareLaunchArgument(
         "camera_angle",
-        default_value="24.8",
+        default_value="20.2",
         description=(
             "Angle of the camera frame in radians relative to the world frame",
         ),

@@ -12,10 +12,14 @@ class CameraPlaneCalibrator(Node):
         self.declare_parameter('camera_frame', 'c920_camera_link')
         self.declare_parameter('tag_prefix', 'tag36h11')
         self.declare_parameter('tag_ids', [0,1,2,3,4,5,6,7,8,9])
+        # Output convention for roll/pitch: 'z_forward' (optical) or 'x_forward'
+        #self.declare_parameter('output_convention', 'z_forward')
+        self.declare_parameter('output_convention', 'x_forward')
 
         self.camera_frame = self.get_parameter('camera_frame').value
         self.tag_prefix = self.get_parameter('tag_prefix').value
         self.tag_ids = self.get_parameter('tag_ids').value
+        self.output_convention = self.get_parameter('output_convention').value
 
         self.tf_buffer = tf2_ros.Buffer()
         self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
@@ -101,18 +105,36 @@ class CameraPlaneCalibrator(Node):
         # Camera pose in plane frame
         T_cam_plane = self.invert(T_plane)
 
+        # Tag positions in plane frame (z should be ~0)
+        tag_positions_h = np.hstack([tag_positions, np.ones((tag_positions.shape[0], 1))])
+        tag_positions_plane = (T_cam_plane @ tag_positions_h.T).T
+        z_vals = tag_positions_plane[:, 2]
+        z_mean = float(np.mean(z_vals))
+        z_mean_abs = float(np.mean(np.abs(z_vals)))
+        z_rmse = float(np.sqrt(np.mean(z_vals ** 2)))
+
         cam_pos = T_cam_plane[:3, 3]
         height = abs(cam_pos[2])
 
-        R_cp = T_cam_plane[:3, :3]
-        pitch = np.arctan2(-R_cp[2, 0], R_cp[2, 2])
+        # Roll/pitch from plane normal
+        # If output_convention == 'z_forward', assume camera frame is optical: x right, y down, z forward
+        # If output_convention == 'x_forward', convert to: x forward, y left, z up
+        if self.output_convention == 'x_forward':
+            # optical (x right, y down, z forward) -> x_forward (x forward, y left, z up)
+            nx, ny, nz = plane_normal
+            nx, ny, nz = nz, -nx, -ny
+        else:
+            nx, ny, nz = plane_normal
+
+        roll = np.arctan2(ny, nz)
+        pitch = np.arctan2(-nx, np.sqrt(ny * ny + nz * nz))
+        roll_deg = np.degrees(roll)
         pitch_deg = np.degrees(pitch)
 
-        pitch_rad = np.pi/2 - pitch
-        pitch_deg = np.degrees(pitch_rad)
-
         self.get_logger().info(
-            f"Height: {height:.3f} m | Pitch: {pitch_deg:.2f} deg | Normal: {plane_normal}"
+            f"Height: {height:.3f} m | Roll: {roll_deg:.2f} deg | Pitch: {pitch_deg:.2f} deg | "
+            f"Z-err mean: {z_mean:.4f} m | Z-err mean|abs|: {z_mean_abs:.4f} m | Z-err RMSE: {z_rmse:.4f} m | "
+            f"Normal: {plane_normal}"
         )
 
 
